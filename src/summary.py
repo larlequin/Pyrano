@@ -3,6 +3,8 @@ from PyQt4 import QtCore
 import runrscript as rsc
 import rresults as printr
 
+import dataview as dtv
+
 class Summary(QtGui.QWidget):
     """Summary tab to summarized variables and
             options chosen.
@@ -15,24 +17,36 @@ class Summary(QtGui.QWidget):
         sum_layout = self.sum_vars()
         self.r = rsc.RunRScript(self.main.csv)
         # Run R button
-        raov_layout = self.run_aov()
+        raov_bt = self.run_aov()
+        # Viewdata button
+        viewdt_bt = self.viewdtbutton()
+        # ------------------------------------------------
+        hbox = QtGui.QHBoxLayout()
+        hbox.addStretch(1)
+        hbox.addWidget(viewdt_bt)
+        hbox.addWidget(raov_bt)
         # Final layout
         vbox = QtGui.QVBoxLayout()
         vbox.addWidget(sum_layout)
-        vbox.addWidget(raov_layout)
+        vbox.addLayout(hbox)
         self.sums.setLayout(vbox)
 
+    def viewdata(self):
+        try:
+            dview = dtv.ViewData(self, self.main.csv['dtmodel'], self.main.vars)
+            dview.exec_()
+        except:
+            self.main.msg.critical("No data file selected!")
+
+    def viewdtbutton(self):
+        viewdt_button = QtGui.QPushButton('Viewdata', self.sums)
+        viewdt_button.clicked.connect(self.viewdata)
+        return viewdt_button
+
     def run_aov(self):
-        aov = QtGui.QWidget()
-        aov_button = QtGui.QPushButton('Run ANOVA', aov)
-        # Layout button run AOV
-        hbox_aov = QtGui.QHBoxLayout()
-        hbox_aov.addStretch(1)
-        hbox_aov.addWidget(aov_button)
-        aov.setLayout(hbox_aov)
-        # Connection -------------------------------------------------#
+        aov_button = QtGui.QPushButton('Run ANOVA', self)
         self.connect(aov_button, QtCore.SIGNAL('clicked()'), self.buttonClicked)
-        return aov
+        return aov_button
 
     def buttonClicked(self):
         self.main.status.showMessage("Running ANOVA", 5000)        

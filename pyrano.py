@@ -97,40 +97,24 @@ class MainWindow(QtGui.QMainWindow):
         else:
             self.msg.critical("Please select a text or CSV file")
             self.load_dtfile(dt)   
+        dtmodel = QtGui.QStandardItemModel(self)
         try:
             with open(fname) as fdata:
                 r = csv.reader(fdata, delimiter=self.csv['sep'])
-                rows = list(r)
-                self.csv['nrows'] = len(rows)
                 if self.csv['toskip'] == '0':
                     pass
                 else:
                     for i in range(int(self.csv['toskip'])):
                         r.next()
                 self.vars = r.next()
-                self.csv['ncols'] = len(self.vars)
+                for row in r:
+                    items = [QtGui.QStandardItem(field)
+                                                        for field in row]
+                    dtmodel.appendRow(items)
         except IOError:
                 self.msg.critical("Please select a data file")
                 self.load_dtfile(dt)
-
-        with open(fname, "rb") as fdata:
-            # if self.csv['toskip'] == '0':
-            #         pass
-            # else:
-            #     for i in range(int(self.csv['toskip'])):
-            #         r.next()
-            for row in csv.reader(fdata, delimiter=self.csv['sep']):    
-                items = [
-                    QtGui.QStandardItem(field)
-                    for field in row
-            ]
-                self.model.appendRow(items)
-
-        self.tableView = QTableView(self)
-        self.tableView.setModel(self.model)
-        self.tableView.horizontalHeader().setStretchLastSection(True)
-
-
+        self.csv['dtmodel'] = dtmodel
 
     def menu(self):
         """ Define the action in the Menu and Toolbar
