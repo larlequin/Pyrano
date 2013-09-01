@@ -11,11 +11,16 @@ class RunRScript(object):
     """
     def __init__(self, fdata):
         super(RunRScript, self).__init__()
-        robjects.r("""library('ez')""")
         self.csvfile = fdata
         self.dt = None
         self.aov = {}
         self.stats = {}
+        self.load_libs()
+
+    def load_libs(self):
+        for lib in ['car', 'plyr', 'stringr', 'reshape2']:
+            toeval = """library('%s')""" % lib
+            robjects.r(toeval)
 
     def getdata(self):
         """Load a data set through a csv file.
@@ -46,9 +51,7 @@ class RunRScript(object):
         # Create a new data frame with the correct responses as DV 
         cur_var = self.format_ddply(daov)
         toeval = "dt_cr = ddply(dt, {0}, function(x) 1-(nrow(x)-nrow(x[x${1}==1,]))/nrow(x))".format(cur_var, daov['cr'][0])
-        print toeval
         cr = robjects.r(toeval)
-        print cr
         # Keep only the good responses for the analyses
         toeval = "dt = dt[ dt${0} == 1, ]".format(daov['cr'][0])
         dt_ok = robjects.r(toeval)
@@ -71,6 +74,8 @@ class RunRScript(object):
     def anova(self, daov, dv):
         """Run ANOVA through the ez package
         """
+        robjects.r("""source('rscripts/ezANOVA.R')""")
+        robjects.r("""source('rscripts/ez-internal.R')""")
         if dv == 'CR':
             toeval = "aov_cr = ezANOVA(dt_cr, dv=%s, wid=%s, between=%s, within=%s)" % ("V1", self.format_ez(daov['wid']), self.format_ez(daov['between']), self.format_ez(daov['within']))             
         elif dv == 'RT': 
