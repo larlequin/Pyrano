@@ -51,6 +51,10 @@ class Summary(QtGui.QWidget):
     def buttonClicked(self):
         if self.main.csv['file'] == None:
             self.main.msg.critical("No data file selected!")
+        elif self.main.exp['dv'] == 'NULL' or self.main.exp['wid']== 'NULL':
+            self.main.msg.critical("The depend variable and subjects columns should be provided!")
+        elif self.main.exp['within'] == 'NULL' and self.main.exp['between'] == 'NULL':
+            self.main.msg.critical("A least one within or between factor should be indicated!")
         else:
             self.main.status.showMessage("Running ANOVA", 5000)        
             if self.main.exp['run_cr']:

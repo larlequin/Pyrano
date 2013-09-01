@@ -30,7 +30,7 @@ class DefData(QtGui.QWidget):
         # Define the label
         txt_data = QtGui.QLabel("<b>Data set</b>", self.data)
         # Feedback to display the filename
-        self.cur_data = QtGui.QLineEdit("Null", self.data)
+        self.cur_data = QtGui.QLineEdit("Not defined", self.data)
         self.cur_data.setReadOnly(True)
         # Button to launch the choose file dialog
         open_button = QtGui.QPushButton("...", self.data)
@@ -171,7 +171,6 @@ class DefData(QtGui.QWidget):
             self.main.csv['sep'] = ";"
             self.main.csv['toskip'] = "0"
         self.load_vars()
-        print self.main.vars
 
     def get_layout(self):
         return self.data

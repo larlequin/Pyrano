@@ -43,9 +43,9 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
         self.vars = None
-        self.csv = {'file': None, 'fpath': None, 'sep': ';', 'toskip': '0'}
+        self.csv = {'file': 'Not defined', 'fpath': None, 'sep': ';', 'toskip': '0'}
         self.filtrt = {'RTidx': None, 'min': 'NULL', 'max': 'NULL', 'sdv': 'NULL'}
-        self.exp = {'dv': ['RT_raw'], 'wid': ['Subjects'], 'within': ['encodage', 'catego'], 'between': 'NULL', 'cr': None, 'run_cr': False}
+        self.exp = {'dv': 'NULL', 'wid': 'NULL', 'within': 'NULL', 'between': 'NULL', 'cr': None, 'run_cr': False}
         # Initiate the message display class
         self.msg = MessageBox()
         self.menu()
