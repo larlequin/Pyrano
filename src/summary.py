@@ -15,7 +15,7 @@ class Summary(QtGui.QWidget):
         self.main = parent
         # Widgets to display the summary variables
         sum_layout = self.sum_vars()
-        self.r = rsc.RunRScript(self.main.csv)
+        self.r = rsc.RunRScript(self.main.csv, self.main.msg)
         # Run R button
         raov_bt = self.run_aov()
         # Viewdata button
@@ -49,29 +49,33 @@ class Summary(QtGui.QWidget):
         return aov_button
 
     def buttonClicked(self):
-        self.main.status.showMessage("Running ANOVA", 5000)        
-        if self.main.exp['run_cr']:
-            self.r.desc_data(self.main.exp, self.main.filtrt, 'CR')
-            self.r.anova(self.main.exp, 'CR')
-        if self.main.filtrt['min'] != 'NULL' or self.main.filtrt['sdv'] != 'NULL':
-            self.r.desc_data(self.main.exp, self.main.filtrt, 'RT')
-            self.r.anova(self.main.exp, 'RT')
+        if self.main.csv['file'] == None:
+            self.main.msg.critical("No data file selected!")
         else:
-            self.r.desc_data(self.main.exp, None, 'RT')
-            self.r.anova(self.main.exp, 'RT')    
-        self.main.status.showMessage("ANOVA completed", 2500)
-        stats = self.r.get_stats()
-        aov = self.r.get_aov()
-        for dv in stats.keys():
-            if dv == "RT":
-                self.r_rt = printr.r_results(self, self.main, stats[dv], aov[dv], "REACTION TIMES")
-                self.r_rt.show()    
-            elif dv == "CR":
-                self.r_cr = printr.r_results(self, self.main, stats[dv], aov[dv], "CORRECT RESPONSES RATE")                
-                self.r_cr.show()    
-
-    def startR(self):
-        self.r = rsc.RunRScript(self.main.csv)
+            self.main.status.showMessage("Running ANOVA", 5000)        
+            if self.main.exp['run_cr']:
+                stats_done = self.r.desc_data(self.main.exp, self.main.filtrt, 'CR')
+                if stats_done:
+                    self.r.anova(self.main.exp, 'CR')
+            if self.main.filtrt['min'] != 'NULL' or self.main.filtrt['sdv'] != 'NULL':
+                stats_done = self.r.desc_data(self.main.exp, self.main.filtrt, 'RT')
+                if stats_done:
+                    self.r.anova(self.main.exp, 'RT')
+            else:
+                stats_done = self.r.desc_data(self.main.exp, None, 'RT')
+                if stats_done:
+                    self.r.anova(self.main.exp, 'RT')    
+            if stats_done:
+                self.main.status.showMessage("ANOVA completed", 2500)
+                stats = self.r.get_stats()
+                aov = self.r.get_aov()
+                for dv in stats.keys():
+                    if dv == "RT":
+                        self.r_rt = printr.r_results(self, self.main, stats[dv], aov[dv], "REACTION TIMES")
+                        self.r_rt.show()    
+                    elif dv == "CR":
+                        self.r_cr = printr.r_results(self, self.main, stats[dv], aov[dv], "CORRECT RESPONSES RATE")                
+                        self.r_cr.show()    
 
     def get_ranova(self):
         return self.r.get_layout()

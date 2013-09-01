@@ -1,9 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os
 import sys
-import csv
 import platform
 from PyQt4 import QtGui
 from PyQt4 import QtCore
@@ -46,22 +44,20 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self, parent)
         self.vars = None
         self.csv = {'file': None, 'fpath': None, 'sep': ';', 'toskip': '0'}
-        self.filtrt = {'RTidx': None, 'min': None, 'max': None, 'sdv': None}
-        self.exp = {'dv': ['RT_raw'], 'wid': ['Subjects'], 'within': ['encodage', 'catego'], 'between': 'NULL', 'cr': ['Resp_raw'], 'run_cr': True}
-        # Summary class
-        sc = tabsum.Summary(self)
-        sc.startR()
+        self.filtrt = {'RTidx': None, 'min': 'NULL', 'max': 'NULL', 'sdv': 'NULL'}
+        self.exp = {'dv': ['RT_raw'], 'wid': ['Subjects'], 'within': ['encodage', 'catego'], 'between': 'NULL', 'cr': None, 'run_cr': False}
         # Initiate the message display class
         self.msg = MessageBox()
         self.menu()
-        self.create_main_frame(sc)
+        self.create_main_frame()
         # Create a status bar
         self.status = self.statusBar()
         self.status.showMessage("Ready", 2500)
 
-    def create_main_frame(self, sc):        
+    def create_main_frame(self):        
         tabs = QtGui.QTabWidget()
         # Summary tab
+        sc = tabsum.Summary(self)
         summary = sc.get_layout()
         # Variables tab
         expvar = tabvars.DefVariables(self)
@@ -79,42 +75,11 @@ class MainWindow(QtGui.QMainWindow):
         tabs.addTab(frt, "RT Filtering")
         self.setCentralWidget(tabs)
         # Connections ---------------------------------------------#
-        self.connect(dt, QtCore.SIGNAL("clicked()"), lambda: self.load_dtfile(dt))
         self.connect(tabs, QtCore.SIGNAL('currentChanged(int)'), lambda: self.update_sum(tabs, sc))
 
     def update_sum(self, tabs, sc):
         if tabs.currentIndex()==0:
             sc.update_sum()
-
-    def load_dtfile(self, dt):
-        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file', '~', "Text / CSV files (*.txt *.csv)")
-        dt.set_filename(fname)
-        fname_shrt = os.path.split(str(fname))[1]
-        self.csv['file'] = fname_shrt
-        self.csv['fpath'] = fname
-        if str(fname).endswith(".csv") or str(fname).endswith(".txt"):
-            self.status.showMessage("Data {0} loaded".format(fname), 5000)
-        else:
-            self.msg.critical("Please select a text or CSV file")
-            self.load_dtfile(dt)   
-        dtmodel = QtGui.QStandardItemModel(self)
-        try:
-            with open(fname) as fdata:
-                r = csv.reader(fdata, delimiter=self.csv['sep'])
-                if self.csv['toskip'] == '0':
-                    pass
-                else:
-                    for i in range(int(self.csv['toskip'])):
-                        r.next()
-                self.vars = r.next()
-                for row in r:
-                    items = [QtGui.QStandardItem(field)
-                                                        for field in row]
-                    dtmodel.appendRow(items)
-        except IOError:
-                self.msg.critical("Please select a data file")
-                self.load_dtfile(dt)
-        self.csv['dtmodel'] = dtmodel
 
     def menu(self):
         """ Define the action in the Menu and Toolbar

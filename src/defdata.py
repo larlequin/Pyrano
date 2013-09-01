@@ -1,3 +1,5 @@
+import os
+import csv
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
@@ -125,7 +127,36 @@ class DefData(QtGui.QWidget):
             self.main.exp['run_cr'] = False
 
     def buttonClicked(self):
-        self.emit(QtCore.SIGNAL("clicked()"))
+        # self.emit(QtCore.SIGNAL("clicked()"))
+        self.fname = QtGui.QFileDialog.getOpenFileName(self, 'Open file', '~', "Text / CSV files (*.txt *.csv)")
+        if self.fname:
+            self.set_filename(self.fname)
+            self.load_vars()
+        
+    def load_vars(self):
+        if self.fname:
+            fname_shrt = os.path.split(str(self.fname))[1]
+            self.main.csv['file'] = fname_shrt
+            self.main.csv['fpath'] = self.fname
+            self.main.status.showMessage("Data {0} loaded".format(self.fname), 5000)
+            dtmodel = QtGui.QStandardItemModel(self)
+            try:
+                with open(self.fname) as fdata:
+                    r = csv.reader(fdata, delimiter=self.main.csv['sep'])
+                    if self.main.csv['toskip'] == '0':
+                        pass
+                    else:
+                        for i in range(int(self.main.csv['toskip'])):
+                            r.next()
+                    self.main.vars = r.next()
+                    for row in r:
+                        items = [QtGui.QStandardItem(field)
+                                                            for field in row]
+                        dtmodel.appendRow(items)
+            except IOError:
+                    self.msg.critical("Please select a data file")
+                    self.buttonClicked()
+            self.main.csv['dtmodel'] = dtmodel
     
     def set_filename(self, fname):
         self.cur_data.setText(fname)
@@ -139,6 +170,8 @@ class DefData(QtGui.QWidget):
         else:
             self.main.csv['sep'] = ";"
             self.main.csv['toskip'] = "0"
+        self.load_vars()
+        print self.main.vars
 
     def get_layout(self):
         return self.data

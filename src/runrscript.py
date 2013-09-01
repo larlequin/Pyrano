@@ -9,9 +9,10 @@ class RunRScript(object):
         Compute descriptive data,
         Run ANOVA through the ez package.
     """
-    def __init__(self, fdata):
+    def __init__(self, fdata, msg):
         super(RunRScript, self).__init__()
         self.csvfile = fdata
+        self.msg = msg
         self.dt = None
         self.aov = {}
         self.stats = {}
@@ -26,20 +27,26 @@ class RunRScript(object):
         """Load a data set through a csv file.
         """
         toeval = "dt = read.table(%s, sep=%s, header=T)" % (self.format_r(self.csvfile['fpath']), self.format_r(self.csvfile['sep']))
-        self.dt = robjects.r(toeval)  
+        try:
+            self.dt = robjects.r(toeval)
+            return True  
+        except:
+            self.msg.critical("Impossible to open the data file. Please check its format.")
+            return False
 
     def filter(self, daov, dfilter):
         """Filter reaction time with minimum/maximum values and/or
               specified standard deviations.
         """
-        self.getdata()
-        robjects.r("""source('rscripts/filtRT.R')""")
-        expvars = self.format_vector(daov)
-        if dfilter['min'] == 'NULL' and dfilter['max'] == 'NULL':
-            toeval = "dt = filtRT(dt, RTidx={0}, vars={1}, fpass=NULL, sdv={2})".format(dfilter['RTidx'], expvars, dfilter['sdv'])
-        else:
-            toeval = "dt = filtRT(dt, RTidx={0}, vars={1}, fpass=c({2}, {3}), sdv={4})".format(dfilter['RTidx'], expvars, dfilter['min'], dfilter['max'], dfilter['sdv'])
-        dt_filter = robjects.r(toeval)
+        dt_loaded = self.getdata()
+        if dt_loaded:
+            robjects.r("""source('rscripts/filtRT.R')""")
+            expvars = self.format_vector(daov)
+            if dfilter['min'] == 'NULL' and dfilter['max'] == 'NULL':
+                toeval = "dt = filtRT(dt, RTidx={0}, vars={1}, fpass=NULL, sdv={2})".format(dfilter['RTidx'], expvars, dfilter['sdv'])
+            else:
+                toeval = "dt = filtRT(dt, RTidx={0}, vars={1}, fpass=c({2}, {3}), sdv={4})".format(dfilter['RTidx'], expvars, dfilter['min'], dfilter['max'], dfilter['sdv'])
+            dt_filter = robjects.r(toeval)
 
     def correct_resp(self, daov, dfilter):
         """Compute the correct response rates by subject and conditions
@@ -51,36 +58,48 @@ class RunRScript(object):
         # Create a new data frame with the correct responses as DV 
         cur_var = self.format_ddply(daov)
         toeval = "dt_cr = ddply(dt, {0}, function(x) 1-(nrow(x)-nrow(x[x${1}==1,]))/nrow(x))".format(cur_var, daov['cr'][0])
-        cr = robjects.r(toeval)
-        # Keep only the good responses for the analyses
-        toeval = "dt = dt[ dt${0} == 1, ]".format(daov['cr'][0])
-        dt_ok = robjects.r(toeval)
+        try:
+            cr = robjects.r(toeval)
+            # Keep only the good responses for the analyses
+            toeval = "dt = dt[ dt${0} == 1, ]".format(daov['cr'][0])
+            dt_ok = robjects.r(toeval)
+        except:
+            self.msg.critical("Impossible to filter the reaction times. Please check your options and file.")
 
     def desc_data(self, daov, dfilter, dv):    
         """Compute descriptive data (mean, sd, se, ci)
         """
         robjects.r("""source('rscripts/summarySEwithin.R')""")
         if self.dt:
-            pass
+            dt_loaded = True
         else:
-            self.getdata()
-        if dv == 'CR':
-            self.correct_resp(daov, dfilter)
-            toeval = "stats_cr = summarySEwithin(data=dt_cr, wid='{0}', dv='{1}', between={2}, within={3})".format(daov['wid'][0], 'V1', self.format_r(daov['between']), self.format_r(daov['within']))
-        elif dv == 'RT':
-            toeval = "stats_rt = summarySEwithin(data=dt, wid='{0}', dv='{1}', between={2}, within={3})".format(daov['wid'][0], daov['dv'][0], self.format_r(daov['between']), self.format_r(daov['within']))            
-        self.stats[dv] = robjects.r(toeval)
+            dt_loaded = self.getdata()
+        if dt_loaded:
+            try:
+                if dv == 'CR':
+                    self.correct_resp(daov, dfilter)
+                    toeval = "stats_cr = summarySEwithin(data=dt_cr, wid='{0}', dv='{1}', between={2}, within={3})".format(daov['wid'][0], 'V1', self.format_r(daov['between']), self.format_r(daov['within']))
+                elif dv == 'RT':
+                    toeval = "stats_rt = summarySEwithin(data=dt, wid='{0}', dv='{1}', between={2}, within={3})".format(daov['wid'][0], daov['dv'][0], self.format_r(daov['between']), self.format_r(daov['within']))            
+                self.stats[dv] = robjects.r(toeval)
+                return True
+            except:
+                self.msg.critical("Impossible to compute statistics. Please check your options and file.")
+                return False
+        else:
+            return False
 
     def anova(self, daov, dv):
         """Run ANOVA through the ez package
         """
-        robjects.r("""source('rscripts/ezANOVA.R')""")
-        robjects.r("""source('rscripts/ez-internal.R')""")
-        if dv == 'CR':
-            toeval = "aov_cr = ezANOVA(dt_cr, dv=%s, wid=%s, between=%s, within=%s)" % ("V1", self.format_ez(daov['wid']), self.format_ez(daov['between']), self.format_ez(daov['within']))             
-        elif dv == 'RT': 
-            toeval = "aov_rt = ezANOVA(dt, dv=%s, wid=%s, between=%s, within=%s)" % (self.format_ez(daov['dv']), self.format_ez(daov['wid']), self.format_ez(daov['between']), self.format_ez(daov['within'])) 
-        self.aov[dv] = robjects.r(toeval)
+        if self.dt:
+            robjects.r("""source('rscripts/ezANOVA.R')""")
+            robjects.r("""source('rscripts/ez-internal.R')""")
+            if dv == 'CR':
+                toeval = "aov_cr = ezANOVA(dt_cr, dv=%s, wid=%s, between=%s, within=%s)" % ("V1", self.format_ez(daov['wid']), self.format_ez(daov['between']), self.format_ez(daov['within']))             
+            elif dv == 'RT': 
+                toeval = "aov_rt = ezANOVA(dt, dv=%s, wid=%s, between=%s, within=%s)" % (self.format_ez(daov['dv']), self.format_ez(daov['wid']), self.format_ez(daov['between']), self.format_ez(daov['within'])) 
+            self.aov[dv] = robjects.r(toeval)
 
     def format_ddply(self, daov):
         """Format variable to fit into a ddply object
