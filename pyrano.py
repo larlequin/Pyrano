@@ -45,8 +45,8 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self, parent)
         self.vars = None
-        self.csv = {'file': 'data.csv', 'fpath': '/home/gtvallet/Documents/Divers/AnaR.py/data.csv', 'sep': ';', 'toskip': '0'}
-        self.filtrt = {'RTidx': '6', 'min': '200', 'max': '2000', 'sdv': '2.5'}
+        self.csv = {'file': None, 'fpath': None, 'sep': ';', 'toskip': '0'}
+        self.filtrt = {'RTidx': None, 'min': None, 'max': None, 'sdv': None}
         self.exp = {'dv': ['RT_raw'], 'wid': ['Subjects'], 'within': ['encodage', 'catego'], 'between': 'NULL', 'cr': ['Resp_raw'], 'run_cr': True}
         # Summary class
         sc = tabsum.Summary(self)
