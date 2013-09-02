@@ -3,6 +3,7 @@
 
 import sys
 import platform
+import webbrowser
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
@@ -89,6 +90,10 @@ class MainWindow(QtGui.QMainWindow):
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
+        # Documentation
+        doc = QtGui.QAction(QtGui.QIcon('doc.jpeg'), 'Documentation', self)
+        doc.setStatusTip('Getting help')
+        doc.triggered.connect(self.doc)
         # About
         about = QtGui.QAction(QtGui.QIcon('about.jpeg'), 'About', self)
         about.setStatusTip('More information about %s' % __pname__)
@@ -99,7 +104,13 @@ class MainWindow(QtGui.QMainWindow):
         main_menu.addAction(exitAction)
         # Help menu
         help_menu = menubar.addMenu('&Help')
+        help_menu.addAction(doc)  
         help_menu.addAction(about)  
+
+    def doc(self):
+        """Open the readme file to get help/documentation
+        """
+        webbrowser.open_new_tab('readme.html')
 
     def about(self):
         """ Define the action in the help menu

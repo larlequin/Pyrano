@@ -39,7 +39,7 @@ class Summary(QtGui.QWidget):
             self.main.msg.critical("No data file selected!")
 
     def viewdtbutton(self):
-        viewdt_button = QtGui.QPushButton('Viewdata', self.sums)
+        viewdt_button = QtGui.QPushButton('View data', self.sums)
         viewdt_button.clicked.connect(self.viewdata)
         return viewdt_button
 
@@ -75,7 +75,7 @@ class Summary(QtGui.QWidget):
                 aov = self.r.get_aov()
                 for dv in stats.keys():
                     if dv == "RT":
-                        self.r_rt = printr.r_results(self, self.main, stats[dv], aov[dv], "REACTION TIMES")
+                        self.r_rt = printr.r_results(self, self.main, stats[dv], aov[dv], "DEPENDENT VARIABLE")
                         self.r_rt.show()    
                     elif dv == "CR":
                         self.r_cr = printr.r_results(self, self.main, stats[dv], aov[dv], "CORRECT RESPONSES RATE")                
