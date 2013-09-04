@@ -97,3 +97,8 @@ Then, the **descriptive statistics** are indicated for each condition with :
 
 - working R installation
 - plyr package
+
+
+## Licence
+
+Pyrano is under the GPL v3 licence. Please read the licence text before using it. Thanks!

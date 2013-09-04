@@ -18,6 +18,8 @@ __version__ = "1.0.0"
 __date__ = "2013/08/25"
 __author__ = "G.T. Vallet"
 
+# GPL v3 Licence
+
 
 # -----------------------------------------------------------------------------
 # SIMPLE CLASS TO DISPLAY SHORT MESSAGES
