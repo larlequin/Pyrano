@@ -16,33 +16,33 @@ First of all, you need to load a data set into the software. To do so, go to the
 
 Data set should be composed of raw records in "long format" where each line correspond to a trial. File should have a subject column (or another wid variable), at least one independent variable and one dependent variable. Here is an example with different subjects indicated in the first column ('Subjects'), two independent variables ('V1' with 2 levels and 'V2' with 3 levels), a dependent variable  ('DV') as reaction times and a column to indicate whether the response made by the participant was correct or not.
 
-+----------+-----+-----+--------+------+
-| Subjects | V1  | V2  | DV     | Corr |
-+==========+=====+=====+========+======+
-| 1        | A   | A   | 356.75 | 1    |
-+----------+-----+-----+--------+------+
-| 1        | A   | A   | 420.63 | 1    |
-+----------+-----+-----+--------+------+
-| 1        | A   | B   | 397.02 | 0    |
-+----------+-----+-----+--------+------+
-| 1        | A   | B   | 415.15 | 1    |
-+----------+-----+-----+--------+------+
-| 1        | A   | C   | 489.65 | 1    |
-+----------+-----+-----+--------+------+
-| 1        | A   | C   | 603.98 | 1    |
-+----------+-----+-----+--------+------+
-| 1        | A   | C   | 366.86 | 1    |
-+----------+-----+-----+--------+------+
-| 1        | B   | A   | 387.42 | 1    |
-+----------+-----+-----+--------+------+
-| 1        | B   | A   | 442.36 | 0    |
-+----------+-----+-----+--------+------+
-| 1        | B   | B   | 410.41 | 1    |
-+----------+-----+-----+--------+------+
-| 1        | B   | B   | 463.17 | 1    |
-+----------+-----+-----+--------+------+
-| ...      | ... | ... | ...    | ...  |
-+----------+-----+-----+--------+------+
+    +----------+-----+-----+--------+------+
+    | Subjects | V1  | V2  | DV     | Corr |
+    +==========+=====+=====+========+======+
+    | 1        | A   | A   | 356.75 | 1    |
+    +----------+-----+-----+--------+------+
+    | 1        | A   | A   | 420.63 | 1    |
+    +----------+-----+-----+--------+------+
+    | 1        | A   | B   | 397.02 | 0    |
+    +----------+-----+-----+--------+------+
+    | 1        | A   | B   | 415.15 | 1    |
+    +----------+-----+-----+--------+------+
+    | 1        | A   | C   | 489.65 | 1    |
+    +----------+-----+-----+--------+------+
+    | 1        | A   | C   | 603.98 | 1    |
+    +----------+-----+-----+--------+------+
+    | 1        | A   | C   | 366.86 | 1    |
+    +----------+-----+-----+--------+------+
+    | 1        | B   | A   | 387.42 | 1    |
+    +----------+-----+-----+--------+------+
+    | 1        | B   | A   | 442.36 | 0    |
+    +----------+-----+-----+--------+------+
+    | 1        | B   | B   | 410.41 | 1    |
+    +----------+-----+-----+--------+------+
+    | 1        | B   | B   | 463.17 | 1    |
+    +----------+-----+-----+--------+------+
+    | ...      | ... | ... | ...    | ...  |
+    +----------+-----+-----+--------+------+
 
 You can view your data set by clicking on the "View data" button located in the Summary tab.
 
@@ -72,18 +72,18 @@ To run the ANOVA, go to the Summary tab. There, you can check the different para
 
 In each window, the **ANOVA** results are first provided with:
 
-(1) the main ANOVA with all the effects, degree of freedom of the numerator (DFn), of the denominator (DFd), the F value, p value, if the p is significant (at .05) and the power (eta square, general for within design, partial for between design).
-(2) the sphericity test of Mauchly (for within design)
-(3) the corrected ANOVA 
+1) the main ANOVA with all the effects, degree of freedom of the numerator (DFn), of the denominator (DFd), the F value, p value, if the p is significant (at .05) and the power (eta square, general for within design, partial for between design).
+2) the sphericity test of Mauchly (for within design)
+3) the corrected ANOVA 
 
 Then, the **descriptive statistics** are indicated for each condition with :
 
-(1) the number of observation (N)
-(2) mean of the dependent variable
-(3) norm of the DV (for within design)
-(4) standard deviation of the DV
-(5) standard error of the DV corrected for the within design using ....
-(6) confidence intervals at 95% corrected for the within design 
+1) the number of observation (N)
+2) mean of the dependent variable
+3) norm of the DV (for within design)
+4) standard deviation of the DV
+5) standard error of the DV corrected for the within design using ....
+6) confidence intervals at 95% corrected for the within design 
 
 
 ## Dependencies
