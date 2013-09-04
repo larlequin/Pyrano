@@ -72,18 +72,18 @@ To run the ANOVA, go to the Summary tab. There, you can check the different para
 
 In each window, the **ANOVA** results are first provided with:
 
-1) the main ANOVA with all the effects, degree of freedom of the numerator (DFn), of the denominator (DFd), the F value, p value, if the p is significant (at .05) and the power (eta square, general for within design, partial for between design).
-2) the sphericity test of Mauchly (for within design)
+1) the main ANOVA with all the effects, degree of freedom of the numerator (DFn), of the denominator (DFd), the F value, p value, if the p is significant (at .05) and the power (eta square, general for within design, partial for between design).  
+2) the sphericity test of Mauchly (for within design)  
 3) the corrected ANOVA 
 
 Then, the **descriptive statistics** are indicated for each condition with :
 
-1) the number of observation (N)
-2) mean of the dependent variable
-3) norm of the DV (for within design)
-4) standard deviation of the DV
-5) standard error of the DV corrected for the within design using ....
-6) confidence intervals at 95% corrected for the within design 
+1) the number of observation (N)  
+2) mean of the dependent variable  
+3) norm of the DV (for within design)  
+4) standard deviation of the DV  
+5) standard error of the DV corrected for the within design    
+6) confidence intervals at 95% corrected for the within design   
 
 
 ## Dependencies
